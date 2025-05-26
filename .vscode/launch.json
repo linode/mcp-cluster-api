@@ -1,0 +1,18 @@
+{
+    // See https://code.visualstudio.com/docs/editor/debugging for more details
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node-terminal",
+            "name": "Run Inspector (KUBECONFIG required)",
+            "request": "launch",
+            "command": "npx @modelcontextprotocol/inspector bin/capi-mcp",
+            "env": {
+                "KUBECONFIG": "${env:KUBECONFIG}",
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+        }
+    ]
+}
