@@ -294,9 +294,6 @@ func (m *ToolManager) HandleCheckUpgradeEligibility(ctx context.Context, request
 		return nil, fmt.Errorf("cluster control plane is not ready, cannot check upgrade eligibility")
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("failed to create Kubernetes client: %w", err)
-	}
 
 	// Get the control plane details to check current version
 	var controlPlane unstructured.Unstructured
