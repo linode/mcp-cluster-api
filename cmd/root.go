@@ -19,6 +19,7 @@ import (
 
 	"github.com/linode/capi-mcp/pkg/mcptools"
 	"github.com/linode/capi-mcp/pkg/prompts"
+	corev1 "k8s.io/api/core/v1"
 )
 
 var (
@@ -67,9 +68,12 @@ func init() {
 	rootCmd.SetOut(os.Stdout)
 
 	scheme = runtime.NewScheme()
-	err := capi.AddToScheme(scheme)
-	if err != nil {
+	if err := capi.AddToScheme(scheme); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to add CAPI scheme: %v\n", err)
+		os.Exit(1)
+	}
+	if err := corev1.AddToScheme(scheme); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to add corev1 scheme: %v\n", err)
 		os.Exit(1)
 	}
 }

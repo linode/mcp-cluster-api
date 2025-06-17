@@ -44,10 +44,13 @@ func (m *ToolManager) RegisterTools(mcpServer *server.MCPServer) {
 	tools := []ToolHandler{
 		m.NewListClustersTool(),
 		m.NewGetClusterTool(),
+		m.NewGetClusterKubeconfigTool(),
+		m.NewCheckUpgradeEligibilityTool(),
 		m.NewListMachinesTool(),
 		m.NewGetMachineTool(),
 		m.NewGetKubeResourceTool(),
 		m.NewRolloutControlPlaneTool(),
+		m.NewGetControlPlaneStatusTool(),
 	}
 
 	for _, tool := range tools {
