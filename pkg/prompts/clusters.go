@@ -39,8 +39,9 @@ To debug the CAPI cluster named "%s" in the namespace "%s", follow these steps:
 2. Use the get_kube_resource tool to get the controlplane object - Verify that the controlplane object exists, has no errors. 
 3. Identify the cluster's infrastructure provider using the spec.infrastructureRef field.
 4. Use the get_kube_resource tool to get the infrastructure provider object - Verify that the infrastructure provider object exists, has no errors.
-5. Write a detailed report on the cluster's status, including any errors or issues found during the investigation.
-6. If the cluster controlplane is not healthy, follow instructions to restart the controlplane after getting user's consent.
+5. Use the get_control_plane_status tool to check the status of the control plane pods - This will provide information on the health of the control plane pods.
+6. Write a detailed report on the cluster's status, including any errors or issues found during the investigation.
+7. If the cluster controlplane is not healthy, follow instructions to restart the controlplane after getting user's consent.
 `, name, namespace)))}), nil
 }
 
@@ -75,6 +76,7 @@ To restart the control plane of the CAPI cluster named "%s" in the namespace "%s
 2. Use the get_kube_resource tool to get the controlplane object - Verify that the controlplane object exists, has no errors.
 3. Use the rollout_controlplane tool to restart the control plane - This will trigger a rolling update of the control plane machines. ALWAYS get user's consent before proceeding.
 4. Monitor the status of the control plane machines to ensure they are healthy and ready - use the get_machine tool to get the machine objects as needed.
-5. Write a detailed report on the control plane's status, including any errors or issues found during the investigation.
+5. Once the machines are healthy, verify the control plane pods are running correctly - use the get_control_plane_status tool to check the status of the control plane pods.
+6. Write a detailed report on the control plane's status, including any errors or issues found during the investigation.
 `, name, namespace)))}), nil
 }

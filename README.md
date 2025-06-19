@@ -45,9 +45,6 @@ Replace `kubeconfig.yaml` with your actual kubeconfig file if different.
 
 
 TODO:
-## Cluster Management Tools
-1. **upgrade_cluster** - Upgrade a cluster to a new Kubernetes version
-
 ## Machine Management Tools
 1. **drain_machine** - Safely drain workloads from a machine before maintenance
 2. **cordon_machine/uncordon_machine** - Mark machines as unschedulable/schedulable
@@ -57,15 +54,5 @@ TODO:
 ## Cluster Health and Diagnostics
 1. **get_cluster_health** - Check overall health status of a CAPI cluster
 2. **get_cluster_events** - Retrieve recent events related to a cluster
-3. **troubleshoot_cluster** - Run a diagnostic suite on a problematic cluster
-4. **describe_node_pool** - Get detailed information about a cluster's node pools
-
-## Infrastructure Provider Integration
-1. **list_machine_templates** - Show available machine templates for the cluster
-2. **get_machine_template** - Get details of a specific machine template
-3. **list_provider_regions** - Show available regions for the infrastructure provider
-4. **list_instance_types** - List available VM instance types for your provider
-
-## Cluster Upgrade and Maintenance
-1. **upgrade_cluster** - Upgrade a cluster
+3. **describe_node_pool** - Get detailed information about a cluster's node pools
 
