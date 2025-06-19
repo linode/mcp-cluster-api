@@ -51,7 +51,6 @@ func (m *ToolManager) NewGetClusterKubeconfigTool() ToolHandler {
 			mcp.WithDescription("Generate and retrieve a kubeconfig for accessing a CAPI cluster"),
 			mcp.WithString("name", mcp.Required(), mcp.Description("The name of the cluster to get kubeconfig for")),
 			mcp.WithString("namespace", mcp.Required(), mcp.Description("The namespace of the cluster")),
-			mcp.WithString("admin", mcp.Description("Whether to generate an admin kubeconfig with full privileges (values: true/false, default: true)")),
 		),
 		Handler:  m.HandleGetClusterKubeconfig,
 		ReadOnly: true,
@@ -293,7 +292,6 @@ func (m *ToolManager) HandleCheckUpgradeEligibility(ctx context.Context, request
 	if !cluster.Status.ControlPlaneReady {
 		return nil, fmt.Errorf("cluster control plane is not ready, cannot check upgrade eligibility")
 	}
-
 
 	// Get the control plane details to check current version
 	var controlPlane unstructured.Unstructured
