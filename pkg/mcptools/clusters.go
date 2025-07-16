@@ -16,7 +16,6 @@ import (
 	capi "sigs.k8s.io/cluster-api/api/v1beta1"
 	"sigs.k8s.io/cluster-api/util/annotations"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	"sigs.k8s.io/yaml"
 )
 
@@ -110,7 +109,6 @@ func (m *ToolManager) HandleGetCluster(ctx context.Context, request mcp.CallTool
 }
 
 func (m *ToolManager) GetClusterKubeconfig(ctx context.Context, clusterName, namespace string) ([]byte, error) {
-
 	// Get the Secret containing the kubeconfig
 	secret := &corev1.Secret{}
 	secretName := fmt.Sprintf("%s-kubeconfig", clusterName)
@@ -263,6 +261,8 @@ func (m *ToolManager) NewCheckUpgradeEligibilityTool() ToolHandler {
 }
 
 // HandleCheckUpgradeEligibility is the handler function for the check_upgrade_eligibility tool.
+//
+//nolint:cyclop // TODO: simplify later.
 func (m *ToolManager) HandleCheckUpgradeEligibility(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	ctx, cancel := context.WithTimeout(ctx, m.timeout)
 	defer cancel()
@@ -330,7 +330,12 @@ func (m *ToolManager) HandleCheckUpgradeEligibility(ctx context.Context, request
 	}
 
 	// Check if cluster has ongoing operations
-	if _, exists, _ := unstructured.NestedFieldNoCopy(controlPlane.Object, "status", "conditions"); exists {
+	_, exists, err = unstructured.NestedFieldNoCopy(controlPlane.Object, "status", "conditions")
+	if err != nil {
+		return nil, fmt.Errorf("failed to check control plane conditions: %w", err)
+	}
+
+	if exists {
 		var hasOngoingOperations bool
 		// Here we would normally check specific conditions, for this example we'll do a simple check
 		// assuming the control plane has a 'Upgrading' or similar condition
@@ -403,7 +408,7 @@ func (m *ToolManager) HandleCheckUpgradeEligibility(ctx context.Context, request
 
 // checkNodeHealth verifies the health status of all nodes in the cluster.
 // It returns the total number of nodes, number of ready nodes, and details about each node.
-func checkNodeHealth(ctx context.Context, clientset *kubernetes.Clientset) (totalNodes int, readyNodes int, nodeDetails []string, err error) {
+func checkNodeHealth(ctx context.Context, clientset *kubernetes.Clientset) (totalNodes, readyNodes int, nodeDetails []string, err error) {
 	nodes, err := clientset.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return 0, 0, nil, fmt.Errorf("failed to list nodes: %w", err)
@@ -439,14 +444,14 @@ func checkNodeHealth(ctx context.Context, clientset *kubernetes.Clientset) (tota
 
 // checkCriticalPodHealth checks the health of critical pods in the kube-system namespace.
 // It returns the list of critical pods and any unhealthy pods found.
-func checkCriticalPodHealth(ctx context.Context, clientset *kubernetes.Clientset) ([]string, []string, error) {
+func checkCriticalPodHealth(ctx context.Context, clientset *kubernetes.Clientset) (criticalPods, unhealthyPods []string, err error) {
 	pods, err := clientset.CoreV1().Pods("kube-system").List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to list kube-system pods: %w", err)
 	}
 
-	criticalPods := make([]string, 0)
-	unhealthyPods := make([]string, 0)
+	criticalPods = make([]string, 0)
+	unhealthyPods = make([]string, 0)
 
 	for _, pod := range pods.Items {
 		// Consider pods with these labels as critical
