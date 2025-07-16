@@ -52,23 +52,13 @@ jobs:
         CGO_ENABLED: 0
       run: |
         BINARY_NAME="capi-mcp-${{ matrix.goos }}-${{ matrix.goarch }}"
-        if [ "${{ matrix.goos }}" = "windows" ]; then
-          BINARY_NAME="${BINARY_NAME}.exe"
-        fi
         go build -ldflags="-s -w" -o "./bin/${BINARY_NAME}" main.go
 
     - name: Create release archive
       run: |
         BINARY_NAME="capi-mcp-${{ matrix.goos }}-${{ matrix.goarch }}"
-        if [ "${{ matrix.goos }}" = "windows" ]; then
-          BINARY_NAME="${BINARY_NAME}.exe"
-        fi
         cd bin
-        if [ "${{ matrix.goos }}" = "windows" ]; then
-          zip "../${BINARY_NAME}.zip" "${BINARY_NAME}"
-        else
-          tar -czf "../${BINARY_NAME}.tar.gz" "${BINARY_NAME}"
-        fi
+        tar -czf "../${BINARY_NAME}.tar.gz" "${BINARY_NAME}"
         cd ..
 
     - name: Upload release assets
@@ -76,7 +66,6 @@ jobs:
       with:
         files: |
           capi-mcp-${{ matrix.goos }}-${{ matrix.goarch }}.tar.gz
-          capi-mcp-${{ matrix.goos }}-${{ matrix.goarch }}.zip
         draft: false
         prerelease: false
       env:
