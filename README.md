@@ -41,18 +41,4 @@ To run the MCP inspector with your built binary:
 npx @modelcontextprotocol/inspector -e KUBECONFIG=kubeconfig.yaml bin/capi-mcp
 ```
 
-Replace `kubeconfig.yaml` with your actual kubeconfig file if different.
-
-
-TODO:
-## Machine Management Tools
-1. **drain_machine** - Safely drain workloads from a machine before maintenance
-2. **cordon_machine/uncordon_machine** - Mark machines as unschedulable/schedulable
-3. **delete_machine** - Remove a specific machine from the cluster
-4. **get_machine_logs** - Fetch logs from a specific machine for troubleshooting
-
-## Cluster Health and Diagnostics
-1. **get_cluster_health** - Check overall health status of a CAPI cluster
-2. **get_cluster_events** - Retrieve recent events related to a cluster
-3. **describe_node_pool** - Get detailed information about a cluster's node pools
-
+Replace `kubeconfig.yaml` with your actual kubeconfig file.
