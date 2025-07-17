@@ -42,3 +42,130 @@ npx @modelcontextprotocol/inspector -e KUBECONFIG=kubeconfig.yaml bin/capi-mcp
 ```
 
 Replace `kubeconfig.yaml` with your actual kubeconfig file.
+
+## Usage with Claude and VSCode
+
+### Using with Claude Desktop
+
+To use this MCP server with Claude Desktop, you need to configure it in Claude's settings:
+
+1. **Build the binary** (if not already done):
+   ```sh
+   make build
+   ```
+
+2. **Locate Claude's configuration file**:
+   - On macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - On Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+   - On Linux: `~/.config/Claude/claude_desktop_config.json`
+
+3. **Add the MCP server configuration**:
+   ```json
+   {
+     "mcpServers": {
+       "capi-mcp": {
+         "command": "/absolute/path/to/capi-mcp/bin/capi-mcp",
+         "env": {
+           "KUBECONFIG": "/absolute/path/to/your/kubeconfig.yaml"
+         }
+       }
+     }
+   }
+   ```
+
+4. **Restart Claude Desktop** to load the new configuration.
+
+5. **Verify the connection**: In a new conversation with Claude, you should see that the CAPI MCP server is connected and available.
+
+### Using with VSCode
+
+#### Via Claude Extension
+
+If you're using Claude through a VSCode extension that supports MCP:
+
+1. **Install the Claude extension** from the VSCode marketplace.
+
+2. **Configure the MCP server** in your VSCode settings or the extension's configuration file:
+   ```json
+   {
+     "claude.mcpServers": {
+       "capi-mcp": {
+         "command": "/absolute/path/to/capi-mcp/bin/capi-mcp",
+         "env": {
+           "KUBECONFIG": "/absolute/path/to/your/kubeconfig.yaml"
+         }
+       }
+     }
+   }
+   ```
+
+3. **Restart VSCode** to apply the configuration.
+
+#### Via VSCode Toolsets
+
+You can also integrate this MCP server with VSCode toolsets for enhanced development workflows:
+
+1. **Create a toolset configuration** in your workspace:
+   - Open the Command Palette (`Cmd/Ctrl + Shift + P`)
+   - Run "Toolsets: Configure Toolsets" 
+   - Add a new toolset configuration
+
+2. **Configure the CAPI MCP toolset**:
+   ```json
+   {
+     "name": "CAPI MCP Server",
+     "description": "Cluster API management via MCP",
+     "tools": [
+       {
+         "name": "capi-mcp",
+         "command": "/absolute/path/to/capi-mcp/bin/capi-mcp",
+         "env": {
+           "KUBECONFIG": "/absolute/path/to/your/kubeconfig.yaml"
+         },
+         "protocol": "mcp"
+       }
+     ]
+   }
+   ```
+
+3. **Use the toolset**:
+   - Access via the Toolsets panel in the sidebar
+   - Invoke tools directly from the Command Palette
+   - Integrate with other VSCode AI features and extensions
+
+This allows you to use CAPI management tools directly within your VSCode development environment alongside other development toolsets.
+
+### Available Tools and Prompts
+
+Once connected, you can use Claude to:
+
+**Tools:**
+- `list_clusters` - List all CAPI clusters in your Kubernetes environment
+- `get_cluster` - Get detailed information about a specific cluster
+- `get_cluster_kubeconfig` - Generate and retrieve a kubeconfig for accessing a CAPI cluster
+- `check_upgrade_eligibility` - Verify if a cluster can be safely upgraded to a target Kubernetes version
+- `list_machines` - List all machines (nodes) across clusters
+- `get_machine` - Get detailed information about a specific machine
+- `get_kube_resource` - Get any Kubernetes resource by name, kind, and API version
+- `rollout_controlplane` - Rollout a restart of control plane (triggers rolling update - **non-read-only**)
+- `get_control_plane_status` - Get status of control plane components for a CAPI cluster
+
+**Prompts:**
+- `debug_capi_cluster` - Get step-by-step debugging guidance for cluster issues
+- `debug_capi_machine` - Get step-by-step debugging guidance for machine issues
+- `restart_control_plane` - Get step-by-step instructions for restarting a cluster's control plane
+
+### Example Usage
+
+Ask Claude / Copilot questions like:
+- "Show me all my CAPI clusters"
+- "What's the status of my cluster named 'production'?"
+- "List all machines in the cluster 'staging'"
+- "Get me the kubeconfig for my cluster 'dev-cluster' in namespace 'default'"
+- "Check if my cluster can be upgraded to Kubernetes v1.32.0"
+- "Help me debug my cluster using the debug_capi_cluster prompt"
+- "Get the status of control plane components for my cluster"
+- "Get the deployment named 'my-app' in the default namespace using kind 'Deployment' and apiVersion 'apps/v1'"
+
+**Note**: Make sure your `kubeconfig.yaml` file has the necessary permissions to access CAPI resources in your Kubernetes cluster. Some tools like `rollout_controlplane` are write operations and require appropriate RBAC permissions.
+
