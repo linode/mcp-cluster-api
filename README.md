@@ -77,7 +77,9 @@ To use this MCP server with Claude Desktop, you need to configure it in Claude's
 
 5. **Verify the connection**: In a new conversation with Claude, you should see that the CAPI MCP server is connected and available.
 
-### Using with VSCode (via Claude extension)
+### Using with VSCode
+
+#### Via Claude Extension
 
 If you're using Claude through a VSCode extension that supports MCP:
 
@@ -98,6 +100,40 @@ If you're using Claude through a VSCode extension that supports MCP:
    ```
 
 3. **Restart VSCode** to apply the configuration.
+
+#### Via VSCode Toolsets
+
+You can also integrate this MCP server with VSCode toolsets for enhanced development workflows:
+
+1. **Create a toolset configuration** in your workspace:
+   - Open the Command Palette (`Cmd/Ctrl + Shift + P`)
+   - Run "Toolsets: Configure Toolsets" 
+   - Add a new toolset configuration
+
+2. **Configure the CAPI MCP toolset**:
+   ```json
+   {
+     "name": "CAPI MCP Server",
+     "description": "Cluster API management via MCP",
+     "tools": [
+       {
+         "name": "capi-mcp",
+         "command": "/absolute/path/to/capi-mcp/bin/capi-mcp",
+         "env": {
+           "KUBECONFIG": "/absolute/path/to/your/kubeconfig.yaml"
+         },
+         "protocol": "mcp"
+       }
+     ]
+   }
+   ```
+
+3. **Use the toolset**:
+   - Access via the Toolsets panel in the sidebar
+   - Invoke tools directly from the Command Palette
+   - Integrate with other VSCode AI features and extensions
+
+This allows you to use CAPI management tools directly within your VSCode development environment alongside other development toolsets.
 
 ### Available Tools and Prompts
 
