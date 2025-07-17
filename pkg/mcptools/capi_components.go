@@ -58,35 +58,37 @@ func (m *ToolManager) HandleGetControlPlaneStatus(ctx context.Context, request m
 
 	if len(pods.Items) == 0 {
 		sb.WriteString("No control plane pods found for this cluster\n")
-	} else {
-		for _, pod := range pods.Items {
-			sb.WriteString(fmt.Sprintf("Pod: %s\n", pod.Name))
-			sb.WriteString(fmt.Sprintf("  Status: %s\n", string(pod.Status.Phase)))
-			sb.WriteString(fmt.Sprintf("  Node: %s\n", pod.Spec.NodeName))
+		return mcp.NewToolResultText(sb.String()), nil
+	}
 
-			// Container statuses
-			sb.WriteString("  Containers:\n")
-			for _, containerStatus := range pod.Status.ContainerStatuses {
-				sb.WriteString(fmt.Sprintf("    - %s: ", containerStatus.Name))
-				if containerStatus.Ready {
-					sb.WriteString("Ready")
-				} else {
-					sb.WriteString("Not Ready")
-				}
+	for _, pod := range pods.Items {
+		sb.WriteString(fmt.Sprintf("Pod: %s\n", pod.Name))
+		sb.WriteString(fmt.Sprintf("  Status: %s\n", string(pod.Status.Phase)))
+		sb.WriteString(fmt.Sprintf("  Node: %s\n", pod.Spec.NodeName))
 
-				state := ""
-				if containerStatus.State.Waiting != nil {
-					state = fmt.Sprintf(" (Waiting: %s)", containerStatus.State.Waiting.Reason)
-				} else if containerStatus.State.Running != nil {
-					state = fmt.Sprintf(" (Running since: %s)", containerStatus.State.Running.StartedAt)
-				} else if containerStatus.State.Terminated != nil {
-					state = fmt.Sprintf(" (Terminated: %s)", containerStatus.State.Terminated.Reason)
-				}
-				sb.WriteString(state)
-				sb.WriteString("\n")
+		// Container statuses
+		sb.WriteString("  Containers:\n")
+		for _, containerStatus := range pod.Status.ContainerStatuses {
+			sb.WriteString(fmt.Sprintf("    - %s: ", containerStatus.Name))
+			if containerStatus.Ready {
+				sb.WriteString("Ready")
+			} else {
+				sb.WriteString("Not Ready")
 			}
+
+			state := ""
+			switch {
+			case containerStatus.State.Waiting != nil:
+				state = fmt.Sprintf(" (Waiting: %s)", containerStatus.State.Waiting.Reason)
+			case containerStatus.State.Running != nil:
+				state = fmt.Sprintf(" (Running since: %s)", containerStatus.State.Running.StartedAt)
+			case containerStatus.State.Terminated != nil:
+				state = fmt.Sprintf(" (Terminated: %s)", containerStatus.State.Terminated.Reason)
+			}
+			sb.WriteString(state)
 			sb.WriteString("\n")
 		}
+		sb.WriteString("\n")
 	}
 
 	return mcp.NewToolResultText(sb.String()), nil

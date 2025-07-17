@@ -10,6 +10,7 @@ import (
 
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/spf13/cobra"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	capi "sigs.k8s.io/cluster-api/api/v1beta1"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -19,7 +20,6 @@ import (
 
 	"github.com/linode/capi-mcp/pkg/mcptools"
 	"github.com/linode/capi-mcp/pkg/prompts"
-	corev1 "k8s.io/api/core/v1"
 )
 
 var (
