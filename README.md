@@ -1,5 +1,4 @@
-how to test
-## capi-mcp
+# capi-mcp
 
 **capi-mcp** is a tool that integrates [CAPI](https://cluster-api.sigs.k8s.io/) (Cluster API) resources with the [Model Context Protocol (MCP)](https://mcp.so/), enabling programmatic and prompt-based management of Kubernetes clusters and machines.
 
@@ -75,7 +74,9 @@ To use this MCP server with Claude Desktop, you need to configure it in Claude's
 
 4. **Restart Claude Desktop** to load the new configuration.
 
-5. **Verify the connection**: In a new conversation with Claude, you should see that the CAPI MCP server is connected and available.
+5. **Verify the connection**: In a new conversation with Claude, you should see that the CAPI MCP server is connected and running through developer settings.
+<img width="2578" height="1226" alt="image" src="https://github.com/user-attachments/assets/953dc171-0d08-40aa-ade3-67b67fc5aad4" />
+
 
 ### Using with VSCode
 
