@@ -98,14 +98,17 @@ func cmdRun(cmd *cobra.Command, args []string) error {
 		return errors.New("KUBECONFIG environment variable is not set")
 	}
 
+	kubeConfig := config.GetConfigOrDie()
+
 	// initialize the client using kubeconfig
-	kubeClient, err := client.New(config.GetConfigOrDie(), client.Options{Scheme: scheme})
+	kubeClient, err := client.New(kubeConfig, client.Options{Scheme: scheme})
 	if err != nil {
 		return err
 	}
 
 	// create our manager
 	toolManager := mcptools.NewToolManager(
+		mcptools.WithConfig(kubeConfig),
 		mcptools.WithKubeClient(kubeClient),
 		mcptools.WithTimeout(cliOptions.Timeout),
 		mcptools.WithReadOnly(cliOptions.ReadOnly),

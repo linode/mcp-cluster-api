@@ -35,17 +35,6 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-func (m *ToolManager) NewListClustersTool() ToolHandler {
-	return ToolHandler{
-		Tool: mcp.NewTool("list_clusters",
-			mcp.WithDescription("Get CAPI clusters in the cluster"),
-			mcp.WithString("namespace", mcp.Description("The namespace to list clusters in")),
-		),
-		Handler:  m.HandleListClusters,
-		ReadOnly: true,
-	}
-}
-
 // NewGetClusterTool registers a tool to get a single CAPI cluster by name and (optionally) namespace.
 func (m *ToolManager) NewGetClusterTool() ToolHandler {
 	return ToolHandler{
@@ -70,29 +59,6 @@ func (m *ToolManager) NewGetClusterKubeconfigTool() ToolHandler {
 		Handler:  m.HandleGetClusterKubeconfig,
 		ReadOnly: true,
 	}
-}
-
-// HandleListClusters is the handler function for the list_clusters tool.
-func (m *ToolManager) HandleListClusters(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	ctx, cancel := context.WithTimeout(ctx, m.timeout)
-	defer cancel()
-	var clusters capi.ClusterList
-	if err := m.kubeClient.List(ctx, &clusters, &client.ListOptions{Namespace: request.GetString("namespace", "")}); err != nil {
-		return nil, fmt.Errorf("list clusters: %w", err)
-	}
-
-	var sb strings.Builder
-	for _, cluster := range clusters.Items {
-		// Remove managed fields to avoid cluttering the output
-		cluster.SetManagedFields(nil)
-		clusterBytes, err := yaml.Marshal(cluster.DeepCopyObject())
-		if err != nil {
-			return nil, fmt.Errorf("marshal cluster: %w", err)
-		}
-		sb.WriteString("---\n")
-		sb.Write(clusterBytes)
-	}
-	return mcp.NewToolResultText(sb.String()), nil
 }
 
 // HandleGetCluster is the handler function for the get_cluster tool.

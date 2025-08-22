@@ -21,6 +21,7 @@ import (
 
 	"github.com/go-logr/logr"
 	"github.com/mark3labs/mcp-go/server"
+	"k8s.io/client-go/rest"
 	k8s "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -35,6 +36,12 @@ func NewToolManager(options ...func(*ToolManager)) *ToolManager {
 func WithKubeClient(kubeClient k8s.Client) func(*ToolManager) {
 	return func(m *ToolManager) {
 		m.kubeClient = kubeClient
+	}
+}
+
+func WithConfig(cfg *rest.Config) func(*ToolManager) {
+	return func(m *ToolManager) {
+		m.cfg = cfg
 	}
 }
 
@@ -58,11 +65,10 @@ func WithLogger(logger *logr.Logger) func(*ToolManager) {
 
 func (m *ToolManager) RegisterTools(mcpServer *server.MCPServer) {
 	tools := []ToolHandler{
-		m.NewListClustersTool(),
+		m.NewListTool(),
 		m.NewGetClusterTool(),
 		m.NewGetClusterKubeconfigTool(),
 		m.NewCheckUpgradeEligibilityTool(),
-		m.NewListMachinesTool(),
 		m.NewGetMachineTool(),
 		m.NewGetKubeResourceTool(),
 		m.NewRolloutControlPlaneTool(),
