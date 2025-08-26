@@ -62,12 +62,19 @@ Example Usage:
   Response: (YAML output of all machinesets in all the namespaces)
 `
 
+type KubeOperation string
+
+const (
+	ListOp KubeOperation = "List"
+	GetOp  KubeOperation = "Get"
+)
+
 type CAPIResourceType struct {
 	List *unstructured.UnstructuredList
 	Get  *unstructured.Unstructured
 }
 
-func getCAPIResourceGVK(config *rest.Config, resource, operation string) (*schema.GroupVersionKind, error) {
+func getCAPIResourceGVK(config *rest.Config, resource string, operation KubeOperation) (*schema.GroupVersionKind, error) {
 	discoveryClient, err := discovery.NewDiscoveryClientForConfig(config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get discovery client: %w", err)
@@ -85,12 +92,13 @@ func getCAPIResourceGVK(config *rest.Config, resource, operation string) (*schem
 	if err != nil {
 		return nil, fmt.Errorf("failed to get GVK for %s: %w", resource, err)
 	}
-	if operation == "list" {
-		objGVK.Kind += "List"
+
+	if ListOp == operation {
+		objGVK.Kind += string(ListOp)
 	}
 
 	// ignore any object that is not part of the CAPI group
-	if !strings.HasSuffix(objGVK.Group, "x-k8s.io") {
+	if !strings.HasSuffix(objGVK.Group, "cluster.x-k8s.io") {
 		return nil, fmt.Errorf("resource %s is not a CAPI resource", resource)
 	}
 
@@ -107,8 +115,11 @@ func removeManagedFields(objList *unstructured.UnstructuredList) {
 // getObjList retrieves the appropriate ObjectList based on the resource type in the request
 func getObjList(ctx context.Context, cfg *rest.Config, kubeClient client.Client, request mcp.CallToolRequest) (*unstructured.UnstructuredList, error) {
 	resourceType := request.GetString("resource_type", "")
+	if resourceType == "" {
+		return nil, fmt.Errorf("resource_type is required")
+	}
 	resourceObj := unstructured.UnstructuredList{}
-	objGVK, err := getCAPIResourceGVK(cfg, resourceType, "list")
+	objGVK, err := getCAPIResourceGVK(cfg, resourceType, ListOp)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +155,6 @@ func (m *ToolManager) HandleListResources(ctx context.Context, request mcp.CallT
 		return nil, err
 	}
 	var sb strings.Builder
-	removeManagedFields(objList)
 	yamlData, err := yaml.Marshal(objList)
 	if err != nil {
 		return nil, fmt.Errorf("error marshalling %s list: %w", request.GetString("resource_type", ""), err)
