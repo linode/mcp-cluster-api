@@ -22,6 +22,7 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
+	"k8s.io/client-go/rest"
 	k8s "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -33,6 +34,7 @@ type ToolHandler struct {
 
 type ToolManager struct {
 	kubeClient k8s.Client
+	cfg        *rest.Config
 	timeout    time.Duration
 	readOnly   bool
 	logger     *logr.Logger
