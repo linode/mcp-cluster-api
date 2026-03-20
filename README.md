@@ -34,7 +34,7 @@ make lint
 
 ## Running & Testing
 
-**Transport support**: `capi-mcp` supports only stdio transport. 
+**Transport support**: `capi-mcp` supports only stdio transport.
 
 To run the MCP inspector with your built binary:
 
