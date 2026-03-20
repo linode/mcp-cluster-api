@@ -123,7 +123,7 @@ func cmdRun(cmd *cobra.Command, args []string) error {
 	promptManager.RegisterPrompts(mcpServer)
 
 	if cliOptions.Transport != "stdio" {
-		return errors.New("unsupported transport: only 'stdio' is supported")
+		return fmt.Errorf("unsupported transport %q: only 'stdio' is supported", cliOptions.Transport)
 	}
 
 	if err := server.ServeStdio(mcpServer); err != nil {
