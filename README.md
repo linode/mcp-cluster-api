@@ -34,6 +34,8 @@ make lint
 
 ## Running & Testing
 
+**Transport support**: `capi-mcp` supports only stdio transport.
+
 To run the MCP inspector with your built binary:
 
 ```sh
@@ -169,4 +171,3 @@ Ask Claude / Copilot questions like:
 - "Get the deployment named 'my-app' in the default namespace using kind 'Deployment' and apiVersion 'apps/v1'"
 
 **Note**: Make sure your `kubeconfig.yaml` file has the necessary permissions to access CAPI resources in your Kubernetes cluster. Some tools like `rollout_controlplane` are write operations and require appropriate RBAC permissions.
-

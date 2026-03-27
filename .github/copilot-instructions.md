@@ -4,7 +4,7 @@
 
 This is a **Model Context Protocol (MCP) server** that provides an AI-conversational interface to **Cluster API (CAPI)** resources. The architecture follows a clear separation:
 
-- `cmd/root.go`: Cobra CLI entry point, handles server initialization and transport modes (stdio/sse)
+- `cmd/root.go`: Cobra CLI entry point, handles server initialization in stdio transport mode
 - `pkg/mcptools/`: Tool implementations for CAPI resource operations 
 - `pkg/prompts/`: Structured troubleshooting workflows as MCP prompts
 - `main.go`: Simple entry point delegating to cmd package
@@ -79,8 +79,7 @@ npx @modelcontextprotocol/inspector -e KUBECONFIG=kubeconfig.yaml bin/capi-mcp
 ```
 
 ### Runtime Modes
-- **stdio mode** (default): For integration with AI clients like Claude Desktop
-- **sse mode**: `--transport=sse --port=8080` for web-based debugging
+- **stdio mode** (only supported mode): For integration with AI clients like Claude Desktop
 
 ## Project-Specific Conventions
 

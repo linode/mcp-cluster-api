@@ -35,7 +35,6 @@ import (
 )
 
 var (
-	defaultPort    = 8080
 	defaultTimeout = 10
 	version        = "v0.0.0-alpha0"
 	scheme         *runtime.Scheme
@@ -44,7 +43,6 @@ var (
 type CliOptions struct {
 	ReadOnly  bool
 	Transport string
-	Port      int
 	Timeout   int
 }
 
@@ -73,9 +71,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&cliOptions.ReadOnly, "read-only", false,
 		"Run the server in read-only mode, disabling write operations.")
 	rootCmd.PersistentFlags().StringVar(&cliOptions.Transport, "transport", "stdio",
-		"The transport protocol to use for the MCP server. Options: [stdio, sse].")
-	rootCmd.PersistentFlags().IntVar(&cliOptions.Port, "port", defaultPort,
-		"The port to use for the MCP server. Used only when the transport is set to 'sse'.")
+		"The transport protocol to use for the MCP server. Only 'stdio' is supported.")
 	rootCmd.PersistentFlags().IntVar(&cliOptions.Timeout, "timeout", defaultTimeout, "The timeout for the MCP server.")
 	rootCmd.SetOut(os.Stdout)
 
@@ -126,15 +122,12 @@ func cmdRun(cmd *cobra.Command, args []string) error {
 	toolManager.RegisterTools(mcpServer)
 	promptManager.RegisterPrompts(mcpServer)
 
-	if cliOptions.Transport == "sse" {
-		sseServer := server.NewSSEServer(mcpServer, server.WithKeepAlive(true))
-		if err := sseServer.Start(fmt.Sprintf(":%d", cliOptions.Port)); err != nil {
-			return err
-		}
-	} else {
-		if err := server.ServeStdio(mcpServer); err != nil {
-			return err
-		}
+	if cliOptions.Transport != "stdio" {
+		return fmt.Errorf("unsupported transport %q: only 'stdio' is supported", cliOptions.Transport)
+	}
+
+	if err := server.ServeStdio(mcpServer); err != nil {
+		return err
 	}
 	return nil
 }
